@@ -240,4 +240,56 @@ int main()
 	return 0;
 }
 
-//p212 4:00
+//二进制输出fwrite
+struct S
+{
+	char name[20];
+	int age;
+	double score;
+};
+int main()
+{
+	struct S s = { "张三",20,55.6 };
+	FILE* pf = fopen("test.txt", "wb");
+	return 0;
+	if (pf == NULL)
+	{
+		return 0;
+	}
+	//二进制的形式写文件
+	fwrite(&s, sizeof(struct S), 1, pf);
+
+	//关闭文件
+	fclose(pf);
+	pf = NULL;
+	return 0;
+}
+
+
+//二进制输入fread
+struct S
+{
+	char name[20];
+	int age;
+	double score;
+};
+int main()
+{
+	struct S tmp = { 0 };
+	FILE* pf = fopen("test.txt", "rb");
+	return 0;
+	if (pf == NULL)
+	{
+		return 0;
+	}
+	//二进制的形式读文件
+	fread(&tmp, sizeof(struct S), 1, pf);
+	printf("%s %d %lf\n", tmp.name, tmp.age, tmp.score);
+
+	//关闭文件
+	fclose(pf);
+	pf = NULL;
+	return 0;
+}
+
+//p212 15:40
