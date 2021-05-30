@@ -20,7 +20,7 @@ int main()
 	//fopen("../test.txt","r");
 	//fopen("test.txt","r");
 	//fopen(C:\Users\15991\Desktop\文件操作2.c);  把全部的路径写出来就是绝对路径
-    //vs右下角有例子
+	//vs右下角有例子
 	FILE* pf = fopen("test.txt", "r"); //只读,会打开一个已经存在的文本文件
 	if (pf == NULL)
 	{
@@ -41,8 +41,8 @@ int main()
 //字符输出函数
 int main()
 {
-	FILE* pfWrite = fopen("test.txt", "w"); 
-	if (pfWirte == NULL)
+	FILE* pfWrite = fopen("test.txt", "w");
+	if (pfWrite == NULL)
 	{
 		printf("%s\n", strerror(errno));
 		return 0;
@@ -125,7 +125,7 @@ int main()
 		return 0;
 	}
 	//写文件
-	fputs("hello\n",pf);  //文本行输出函数
+	fputs("hello\n", pf);  //文本行输出函数
 	fputs("world\n", pf);
 
 	//关闭文件
@@ -150,7 +150,7 @@ int main()
 
 
 //格式化输出函数
-struct S 
+struct S
 {
 	int n;
 	float score;
@@ -158,13 +158,13 @@ struct S
 };
 int main()
 {
-	struct S S = { 100.3.14f,"bit" };
+	struct S s = { 100,3.14f,"bit" };
 	FILE* pf = fopen("test.txt", "w");
 	if (pf == NULL)
 	{
 		return 0;
 	}
-	 //格式化的形式写文件
+	//格式化的形式写文件
 	fprintf(pf, "%d %f %s", s.n, s.core, s.arr);
 
 	//关闭文件
@@ -289,5 +289,148 @@ int main()
 	//关闭文件
 	fclose(pf);
 	pf = NULL;
+	return 0;
+}
+
+
+//8.文件的随机读写
+
+//fseek - 根据文件指针的位置和偏移量来定位文件指针
+//int fseek(FILE* stream , long int offest , int origin)
+
+int main()
+{
+	FILE* pf = fopen("text.txt", "r");
+	if (pf == NULL)
+	{
+		return 0;
+	}
+
+	//1.定位文件指针
+	fseek(pf, 2, SEEK_CUR);  //SEEK_CUR为指针的当前位置,还有SEEK_END以及SEEK_SET
+
+	//2.读取文件
+	int ch = fgetc(pf);
+	printf("%c\n", ch);
+
+	//3.关闭文件
+	fclose(pf);
+	pf = NULL;
+	return 0;
+}
+
+
+//ftell - 返回指针相对于起始位置的偏移量
+//long int ftell(FILE* stream);
+int main()
+{
+	FILE* pf = fopen("text.txt", "r");
+	if (pf == NULL)
+	{
+		return 0;
+	}
+
+	//1.定位文件指针
+	fseek(pf, -2, SEEK_END);
+	int pos = ftell(pf);
+
+	//2.读取文件
+	int ch = fgetc(pf);
+	printf("%c\n", ch);
+
+	//3.关闭文件
+	fclose(pf);
+	pf = NULL;
+	return 0;
+}
+
+
+//rewind - 让文件指针的位置回到文件的起始位置
+//void rewind(FILE* stream);
+int main()
+{
+	FILE* pf = fopen("text.txt", "r");
+	if (pf == NULL)
+	{
+		return 0;
+	}
+    
+	int ch = fgetc(pf);  //读取完一个字符,此时的指针指向了下一个字符
+	printf("%c\n", ch);
+
+	rewind(pf);
+	printf("%c\n", ch);
+
+	fclose(pf);
+	pf = NULL;
+	return 0;
+}
+
+
+//9.文件结束的判定
+//在文件读取过程中,不能用feof函数的返回值直接用来判断文件的是否结束
+//而是应用于当文件读取结束的时候,判断是读取失败结束,还是遇到文件尾结束(我们已经知道文件结束了,判断文件是如何结束的,而是不是用来判断文件是否结束)
+
+int main()
+{
+	//feof();  //EOF - end of file - 文件结束的标志
+	FILE* pf = fopen("test.txt", "r");
+	if (pf == NULL)
+	{
+		return 0;
+	}
+	int ch = fgetc(pf);
+	printf("%d\n", ch);
+
+	fclose(pf);
+	pf = NULL;
+	return 0;
+}
+
+//还有一种报错函数
+/* perror example */
+int main()
+{
+	FILE * pFile;
+	pFile = fopen("unexist.ent", "rb");
+	if (pFile == NULL)
+		perror("The following error occurred");
+	else
+		fclose(pFile);
+	return 0;
+}
+//实际的打印结果为The following error occurred: No such file or directory
+
+
+//例子:
+int main()
+{
+	int c;  //注意:int , 非char, 要求处理EOF
+	FILE* fp = fopen("test.txt", "r");
+	if (!fp)
+	{
+		perror("File open failed");
+		return EXIT_FAILURE;
+	}
+
+	//fgetc当读取失败的时候或者遇到文件结束的时候,都会返回EOF
+	while ((c = fgetc(fp)) != EOF)  //标准C I/O读取文件循环
+	{
+		putchar(c);
+	}
+	printf("\n");
+
+	//判断是什么原因结束的
+	if (ferror(fp))
+	{
+		puts("I/O error when reading\n");
+	}
+	else if(feof(fp))
+	{
+		puts("End of file reached successfully\n");
+	}
+
+	fclose(fp);
+	fp = NULL;
 	return 0;
 }
