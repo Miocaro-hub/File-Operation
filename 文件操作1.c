@@ -71,7 +71,7 @@ int main()
 //这些信息是保存在一个结构体变量中的.该结构体类型是有系统声明的,取名叫FILE
 struct_iobuf
 {
-	char* _ptr;
+    char* _ptr;
     int   _cnt;
 	......
 };
